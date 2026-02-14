@@ -12,5 +12,4 @@ NTFY_URL = f"https://ntfy.sh/{NTFY_TOPIC}"
 
 STATE_FILE = "state.json"
 
-# How many items to fetch
 LIMIT = int(os.getenv("LIMIT", "20"))
