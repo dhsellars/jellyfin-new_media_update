@@ -29,27 +29,24 @@ def fetch_latest():
     return r.json()
 
 def notify(title, body, image_url=None):
-    headers = {}
-    data = body.encode("utf-8")
-
     files = None
+
     if image_url:
         img = requests.get(image_url, timeout=10)
         if img.status_code == 200:
             files = {"attachment": ("poster.jpg", img.content)}
 
-    requests.post(NTFY_URL, data=data, headers=headers, files=files)
+    requests.post(NTFY_URL, data=body.encode("utf-8"), files=files)
 
 def main():
     state = load_state()
     notified = set(state["notified_ids"])
 
     items = fetch_latest()
-
     new_items = [i for i in items if i["Id"] not in notified]
 
     if not new_items:
-        return  # nothing new
+        return
 
     for item in new_items:
         item_id = item["Id"]
@@ -59,8 +56,8 @@ def main():
 
         if type_ == "Episode":
             series = item.get("SeriesName", "")
-            season = item.get("ParentIndexNumber", "")
-            episode = item.get("IndexNumber", "")
+            season = item.get("ParentIndexNumber", 0)
+            episode = item.get("IndexNumber", 0)
             title = f"{series} S{season:02}E{episode:02}"
         else:
             title = f"{name} ({year})"
