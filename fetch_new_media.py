@@ -21,13 +21,12 @@ def fetch_latest():
     params = {
         "api_key": JELLYFIN_API_KEY,
         "IncludeItemTypes": "Movie,Episode",
-        "Limit": LIMIT,
-        "Fields": "PrimaryImageAspectRatio,ProductionYear,ParentId,SeriesName,IndexNumber,ParentIndexNumber"
+        "Limit": LIMIT
     }
     r = requests.get(url, params=params, timeout=10)
     r.raise_for_status()
     return r.json()
-
+    
 def notify(title, body, image_url=None):
     files = None
 
