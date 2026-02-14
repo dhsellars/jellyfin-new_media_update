@@ -31,9 +31,8 @@ def fetch_latest():
     return r.json()
 
 def notify(title, body):
-    """Send a simple ntfy notification."""
-    data = {"message": body}
-    requests.post(NTFY_URL, data=data)
+    payload = {"message": body}
+    requests.post(NTFY_URL, json=payload)
 
 def main():
     state = load_state()
