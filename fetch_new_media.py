@@ -7,16 +7,19 @@ from config import (
 )
 
 def load_state():
+    """Load previously notified item IDs."""
     if not os.path.exists(STATE_FILE):
         return {"notified_ids": []}
     with open(STATE_FILE, "r") as f:
         return json.load(f)
 
 def save_state(state):
+    """Save updated notified item IDs."""
     with open(STATE_FILE, "w") as f:
         json.dump(state, f, indent=2)
 
 def fetch_latest():
+    """Fetch latest movies and episodes from Jellyfin."""
     url = f"{JELLYFIN_URL}/Users/{JELLYFIN_USER_ID}/Items/Latest"
     params = {
         "api_key": JELLYFIN_API_KEY,
@@ -26,8 +29,9 @@ def fetch_latest():
     r = requests.get(url, params=params, timeout=10)
     r.raise_for_status()
     return r.json()
-    
+
 def notify(title, body):
+    """Send a simple ntfy notification."""
     data = {"message": body}
     requests.post(NTFY_URL, data=data)
 
@@ -39,28 +43,32 @@ def main():
     new_items = [i for i in items if i["Id"] not in notified]
 
     if not new_items:
-        return
+        return  # Nothing new today
 
     for item in new_items:
         item_id = item["Id"]
-        name = item["Name"]
-        year = item.get("ProductionYear", "")
         type_ = item["Type"]
 
         if type_ == "Episode":
-            series = item.get("SeriesName", "")
+            series = item.get("SeriesName", "Unknown Series")
             season = item.get("ParentIndexNumber", 0)
             episode = item.get("IndexNumber", 0)
-            title = f"{series} S{season:02}E{episode:02}"
-        else:
-            title = f"{name} ({year})"
+            ep_title = item.get("Name", "")
 
-        body = f"New {type_}: {title}"
+            if ep_title:
+                body = f"{series} — S{season:02}E{episode:02} — {ep_title}"
+            else:
+                body = f"{series} — S{season:02}E{episode:02}"
 
-        poster_url = f"{JELLYFIN_URL}/Items/{item_id}/Images/Primary?api_key={JELLYFIN_API_KEY}"
+            title = f"New Episode: {series}"
 
-        notify(title, body, poster_url)
+        else:  # Movie
+            name = item.get("Name", "Unknown Movie")
+            year = item.get("ProductionYear", "")
+            body = f"{name} ({year})"
+            title = f"New Movie: {name}"
 
+        notify(title, body)
         notified.add(item_id)
 
     state["notified_ids"] = list(notified)
