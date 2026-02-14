@@ -2,13 +2,14 @@ name: Jellyfin New Media Digest
 
 on:
   schedule:
-    - cron: "0 8 * * *"   # 8am daily
-  workflow_dispatch:
+    - cron: "0 8 * * *"   # Run every day at 8am UTC (adjust if needed)
+  workflow_dispatch:       # Allows manual runs from the Actions tab
 
 jobs:
   run:
     runs-on: ubuntu-latest
 
+    # Load secrets into environment variables
     env:
       JELLYFIN_URL: ${{ secrets.JELLYFIN_URL }}
       JELLYFIN_API_KEY: ${{ secrets.JELLYFIN_API_KEY }}
@@ -17,15 +18,18 @@ jobs:
       LIMIT: ${{ secrets.LIMIT }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - run: pip install requests python-dotenv
+      - name: Install dependencies
+        run: pip install requests python-dotenv
 
-      - name: Run script
+      - name: Run Jellyfin new media script
         run: python fetch_new_media.py
 
       - name: Commit updated state
@@ -33,5 +37,5 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
           git add state.json
-          git commit -m "Update state" || echo "No changes"
+          git commit -m "Update state" || echo "No changes to commit"
           git push
