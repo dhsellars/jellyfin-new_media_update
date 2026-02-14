@@ -9,6 +9,13 @@ jobs:
   run:
     runs-on: ubuntu-latest
 
+    env:
+      JELLYFIN_URL: ${{ secrets.JELLYFIN_URL }}
+      JELLYFIN_API_KEY: ${{ secrets.JELLYFIN_API_KEY }}
+      JELLYFIN_USER_ID: ${{ secrets.JELLYFIN_USER_ID }}
+      NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+      LIMIT: ${{ secrets.LIMIT }}
+
     steps:
       - uses: actions/checkout@v4
 
