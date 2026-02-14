@@ -27,15 +27,9 @@ def fetch_latest():
     r.raise_for_status()
     return r.json()
     
-def notify(title, body, image_url=None):
-    files = None
-
-    if image_url:
-        img = requests.get(image_url, timeout=10)
-        if img.status_code == 200:
-            files = {"attachment": ("poster.jpg", img.content)}
-
-    requests.post(NTFY_URL, data=body.encode("utf-8"), files=files)
+def notify(title, body):
+    data = {"message": body}
+    requests.post(NTFY_URL, data=data)
 
 def main():
     state = load_state()
