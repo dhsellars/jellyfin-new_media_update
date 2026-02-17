@@ -32,7 +32,7 @@ def fetch_latest():
 
 def notify(title, body):
     payload = {"message": body}
-    requests.post(NTFY_URL, json=payload)
+    requests.post(NTFY_URL, data=message.encode("utf-8"))
 
 def main():
     state = load_state()
