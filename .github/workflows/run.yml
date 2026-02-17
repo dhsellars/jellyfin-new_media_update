@@ -33,12 +33,10 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
       
-          # Stage and commit first
           git add state.json
           git commit -m "Update state" || echo "No changes"
       
-          # Now safely pull and rebase
-          git pull --rebase
+          git push
       
           # Finally push
           git push
