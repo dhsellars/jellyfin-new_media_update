@@ -42,7 +42,7 @@ def main():
     new_items = [i for i in items if i["Id"] not in notified]
 
     if not new_items:
-        return  # Nothing new today
+        return  # Nothing new this run
 
     for item in new_items:
         item_id = item["Id"]
@@ -70,12 +70,11 @@ def main():
         notify(title, body)
         notified.add(item_id)
 
-        # Keep only the most recent 500 IDs (or whatever number you prefer)
-        MAX_IDS = 500
-        if len(notified) > MAX_IDS:
-            
-    # Convert to list, trim, convert back to set
-    notified = set(list(notified)[-MAX_IDS:])
+    # Keep only the most recent 500 IDs
+    MAX_IDS = 500
+    if len(notified) > MAX_IDS:
+        notified = set(list(notified)[-MAX_IDS:])
+
     state["notified_ids"] = list(notified)
     save_state(state)
 
