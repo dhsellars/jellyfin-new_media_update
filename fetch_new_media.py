@@ -70,6 +70,12 @@ def main():
         notify(title, body)
         notified.add(item_id)
 
+        # Keep only the most recent 500 IDs (or whatever number you prefer)
+        MAX_IDS = 500
+        if len(notified) > MAX_IDS:
+            
+    # Convert to list, trim, convert back to set
+    notified = set(list(notified)[-MAX_IDS:])
     state["notified_ids"] = list(notified)
     save_state(state)
 
