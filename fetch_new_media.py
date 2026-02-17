@@ -31,8 +31,11 @@ def fetch_latest():
     return r.json()
 
 def notify(title, body):
-    payload = {"message": body}
-    requests.post(NTFY_URL, data=message.encode("utf-8"))
+    payload = {
+        "title": title,
+        "message": body
+    }
+    requests.post(NTFY_URL, json=payload)
 
 def main():
     state = load_state()
